@@ -16,7 +16,6 @@ function registrationService(userData) {
             const email = userData.email;
             const firstName = userData.firstName.trim();
             const lastName = userData.lastName?.trim();
-            const mobileNo = userData.mobileNo;
             const password = bcrypt.hashSync(userData.password);
 
             const session = driver.session();
@@ -29,12 +28,11 @@ function registrationService(userData) {
             email:$email, 
             firstName:$firstName, 
             lastName:$lastName, 
-            mobileNo:$mobileNo,
             applicationId:apoc.create.uuid(),
             password:$password
         }) return p`;
 
-                session.run(query, { firstName: firstName, lastName: lastName, email: email, mobileNo: mobileNo, password: password })
+                session.run(query, { firstName: firstName, lastName: lastName, email: email, password: password })
                     .then((result) => {
                         if (result.records.length > 0) {
                             resolve({ stat: true, message: 'User registered successfully' });

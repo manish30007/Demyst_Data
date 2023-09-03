@@ -1,35 +1,43 @@
+<app-navbar></app-navbar>
 <div class="container mt-1">
-    <h4 class="mb-4">Business Loan Application</h4>
+    <h4 class="mb-4">Business Loan Application*</h4>
     <form id="loanApplicationForm" [formGroup]="form" (ngSubmit)="onSubmit()" >
         <div class="form-group mt-1">
-            <label for="businessName">Business Name</label>
-            <input type="text" class="form-control" id="businessName" name="businessName" required>
+            <label for="businessName">Business Name*</label>
+            <input type="text" formControlName="businessName" class="form-control" id="businessName" required>
+        </div>  
+
+        <div class="form-group mt-1">
+            <label for="yearEstablished">Year Established*</label>
+            <input type="text" formControlName="yearOfEstb" class="form-control" id="yearEstablished"  required>
         </div>
 
         <div class="form-group mt-1">
-            <label for="yearEstablished">Year Established</label>
-            <input type="text" class="form-control" id="yearEstablished" name="yearEstablished" required>
+            <label for="profitOrLoss">Profit or Loss by the year* (If it is loss, put the amount in negative number like '-12000')</label>
+            <input type="number" formControlName="totalProfitOrLossByYear" class="form-control" id="profitOrLoss" required>
+        </div>
+        <div class="form-group mt-1">
+            <label for="loanAmount">Loan Amount*</label>
+            <input type="number" formControlName="loanAmount" class="form-control" id="loanAmount" required>
         </div>
 
         <div class="form-group mt-1">
-            <label for="profitOrLoss">Profit or Loss by the year (If it loss by the year,put the amount in negative number like '-12000')</label>
-            <input type="number" class="form-control" id="profitOrLoss" name="profitOrLoss" required>
-        </div>
-        <div class="form-group mt-1">
-            <label for="loanAmount">Loan Amount</label>
-            <input type="number" class="form-control" id="loanAmount" name="loanAmount" required>
-        </div>
-
-        <div class="form-group mt-1">
-            <label for="accountingProvider">Accounting Provider</label>
-            <select class="form-control" id="accountingProvider" name="accountingProvider">
+            <label for="accountingProvider">Accounting Provider*</label>
+            <select class="form-control" formControlName="accountingProvider" id="accountingProvider" name="accountingProvider">
                 <option value="Xero">Xero</option>
                 <option value="MYOB">MYOB</option>
                 <!-- Add more accounting providers here -->
             </select>
         </div>
+        <div class="d-flex align-items-center">
+            <div>
+                <button type="button" class="btn btn-primary mt-3" id="requestBalanceSheet" (click)="requestBalanceSheet()">Request Balance Sheet</button>
+            </div>
+            <div *ngIf="isSheetVerified" class="px-2 mt-3">
+                <svg xmlns="http://www.w3.org/2000/svg" height="2em" viewBox="0 0 448 512"><path d="M438.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L160 338.7 393.4 105.4c12.5-12.5 32.8-12.5 45.3 0z"/></svg>
+            </div>
 
-        <button type="button" class="btn btn-primary mt-3" id="requestBalanceSheet" (click)="requestBalanceSheet()">Request Balance Sheet</button>
+        </div>
 
         <!-- Display Balance Sheet here after fetching from the backend -->
         <div id="balanceSheet"></div>
@@ -37,3 +45,42 @@
         <button type="submit" class="btn btn-success mt-3" id="submitApplication">Submit Application</button>
     </form>
 </div>
+<dialog id="modalDialog" class="border-color p-0">
+    <div class="cen px-2 pt-2">
+      <div class="row justify-content-end w-100">
+      </div>
+    </div>
+    <div class="d-flex justify-content-center align-items-center">
+      <div class="card br-10">
+        <div class="card-body br-10 mypad">
+            <div class="container">
+                <h1>Financial Data</h1>
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Year</th>
+                            <th>Month</th>
+                            <th>Profit or Loss</th>
+                            <th>Assets Value</th>
+                        </tr>
+                    </thead>
+                    <tbody >
+                        <!-- Loop through your data and generate table rows -->
+                        <!-- Replace 'sheet' with the name of your data variable -->
+                        <!-- Assuming 'sheet' is in the global scope -->
+                        <tr *ngFor="let item of balansheetData ?? []; let i = index">
+                            <td>{{ item?.year }}</td>
+                            <td>{{ item?.month }}</td>
+                            <td>{{ item?.profitOrLoss }}</td>
+                            <td>{{ item?.assetsValue }}</td>
+                          </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="d-flex justify-content-end">
+                <button class="btn btn-primary" type="button" (click)="checkVerify()">Verify</button>
+            </div>
+        </div>
+      </div>
+    </div>
+  </dialog>

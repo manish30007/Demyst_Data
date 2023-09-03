@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { AccountingService } from '../accounting.service';
 import { AbstractControl, FormBuilder, FormControl, FormGroup, ValidationErrors, Validators } from '@angular/forms';
 import { LoanService } from '../loan.service';
+import Swal from "sweetalert2";
 @Component({
   selector: 'app-dashboard',
   templateUrl: './dashboard.component.html',
@@ -9,7 +10,7 @@ import { LoanService } from '../loan.service';
 })
 export class DashboardComponent {
   balansheetData:[]=[];
-  
+
   form: FormGroup = new FormGroup({
     businessName: new FormControl(''),
     yearOfEstb: new FormControl(''),
@@ -19,6 +20,7 @@ export class DashboardComponent {
   });
   loanResult:any;
   submitted:Boolean = false;
+  isSheetVerified:Boolean = false;
   loading:Boolean = false;
   
   constructor(private accountingService:AccountingService, private formBuilder:FormBuilder, private loanService:LoanService) { }
@@ -28,8 +30,8 @@ export class DashboardComponent {
       {
         businessName: ['', [Validators.required]],
         yearOfEstb: [''],
-        totalProfitOrLossByYear: [0, [Validators.required]],
-        loanAmount: [0, Validators.required],
+        totalProfitOrLossByYear: [null, [Validators.required]],
+        loanAmount: [null, Validators.required],
         accountingProvider: ['Xero', [Validators.required]]
       }
     );
@@ -38,8 +40,14 @@ export class DashboardComponent {
   requestBalanceSheet(){
     this.accountingService.requestBalanceSheet('Xero').subscribe({
       next:(data)=>{
+      if(data.stat==true){
       this.balansheetData = data.data;
+      this.openModal();
       console.log('Balance Sheet Data::', this.balansheetData);
+      }
+      else{
+        Swal.fire("Error", "Unable to fetch balance sheet now", "error")
+      }
       },
       error:(err)=>{
         console.log(err); 
@@ -74,5 +82,21 @@ export class DashboardComponent {
         }}
       })
   
+    }
+    checkVerify(){
+      this.isSheetVerified=true;
+      this.closeModal();
+    }
+    openModal() {
+      const modalDialog = document.getElementById('modalDialog') as HTMLDialogElement;
+      if (modalDialog) {
+        modalDialog.showModal();
+      }
+    }
+    closeModal() {
+      const modalDialog = document.getElementById('modalDialog') as HTMLDialogElement;
+      if (modalDialog) {
+        modalDialog.close();
+      }
     }
 }
