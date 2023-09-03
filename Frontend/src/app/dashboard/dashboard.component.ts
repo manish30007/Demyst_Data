@@ -58,7 +58,7 @@ export class DashboardComponent {
   onSubmit(){
       this.submitted = true;
 
-      if (this.form.invalid) {
+      if (this.form.invalid||this.isSheetVerified) {
         return;
       }
 
@@ -69,6 +69,8 @@ export class DashboardComponent {
         next:(data)=>{
         if(data.stat==true){
           this.loanResult=data.data;
+          Swal.fire('Result', this.loanResult, 'success');
+          this.form.reset();
           console.log(this.loanResult);      
         }else{
           // swal
