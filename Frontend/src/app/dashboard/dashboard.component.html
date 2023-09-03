@@ -1,0 +1,39 @@
+<div class="container mt-1">
+    <h4 class="mb-4">Business Loan Application</h4>
+    <form id="loanApplicationForm" [formGroup]="form" (ngSubmit)="onSubmit()" >
+        <div class="form-group mt-1">
+            <label for="businessName">Business Name</label>
+            <input type="text" class="form-control" id="businessName" name="businessName" required>
+        </div>
+
+        <div class="form-group mt-1">
+            <label for="yearEstablished">Year Established</label>
+            <input type="text" class="form-control" id="yearEstablished" name="yearEstablished" required>
+        </div>
+
+        <div class="form-group mt-1">
+            <label for="profitOrLoss">Profit or Loss by the year (If it loss by the year,put the amount in negative number like '-12000')</label>
+            <input type="number" class="form-control" id="profitOrLoss" name="profitOrLoss" required>
+        </div>
+        <div class="form-group mt-1">
+            <label for="loanAmount">Loan Amount</label>
+            <input type="number" class="form-control" id="loanAmount" name="loanAmount" required>
+        </div>
+
+        <div class="form-group mt-1">
+            <label for="accountingProvider">Accounting Provider</label>
+            <select class="form-control" id="accountingProvider" name="accountingProvider">
+                <option value="Xero">Xero</option>
+                <option value="MYOB">MYOB</option>
+                <!-- Add more accounting providers here -->
+            </select>
+        </div>
+
+        <button type="button" class="btn btn-primary mt-3" id="requestBalanceSheet" (click)="requestBalanceSheet()">Request Balance Sheet</button>
+
+        <!-- Display Balance Sheet here after fetching from the backend -->
+        <div id="balanceSheet"></div>
+
+        <button type="submit" class="btn btn-success mt-3" id="submitApplication">Submit Application</button>
+    </form>
+</div>
