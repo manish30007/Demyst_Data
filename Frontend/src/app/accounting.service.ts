@@ -9,6 +9,6 @@ export class AccountingService {
   constructor(private http: HttpClient) { }
 
   requestBalanceSheet(AccountingProvider:any) {
-    return this.http.post<any>(`http://localhost:7000/api/accounting/balanceSheet`,{AccountingProvider:AccountingProvider,email:null})
+    return this.http.post<any>(`http://localhost:7000/api/accounting/balanceSheet`,{AccountingProvider:AccountingProvider,email:null},{withCredentials:true})
   }
 }

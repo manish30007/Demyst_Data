@@ -2,7 +2,7 @@ var balanceSheetService = require('../services/balanceSheetService');
 
 exports.fetchBalanceSheet = (req, res)=>{
     try {
-        balanceSheetService.fetchBalanceSheet(req.body.AccountingProvider,req.body.email)
+        balanceSheetService.fetchBalanceSheet(req,res)
         .then((data)=>{
             res.status(200).send(data);
            })

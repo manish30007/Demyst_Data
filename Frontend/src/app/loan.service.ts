@@ -9,7 +9,7 @@ export class LoanService {
   constructor(private http: HttpClient) { }
 
   submitLoanApplication(businessData:any) {
-    return this.http.post<any>(`http://localhost:7000/api/decision/engine`,businessData);
+    return this.http.post<any>(`http://localhost:7000/api/decision/engine`,businessData,{withCredentials:true});
   }
 
 }

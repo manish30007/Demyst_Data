@@ -3,20 +3,29 @@ var jwt = require("jsonwebtoken");
 const dbService = require("../config/db.service");
 const driver = dbService();
 var service = {};
-
+const secretKey = 'my-secret-key';
 service.loginService = loginService;
+service.logoutService = logoutService;
 service.registrationService = registrationService;
 
 module.exports = service;
 
-function registrationService(userData) {
+function generateToken(account) {
+    const payload = { id: account.personId, username: account.firstName };
+    return jwt.sign(payload, secretKey, { expiresIn: '1h' });
+  }
+
+ 
+  
+
+function registrationService(req, res) {
     return new Promise(async (resolve, reject) => {
         try {
-            console.log('userdate::',userData);
-            const email = userData.email;
-            const firstName = userData.firstName.trim();
-            const lastName = userData.lastName?.trim();
-            const password = bcrypt.hashSync(userData.password);
+            console.log('userdate::',req.body);
+            const email = req.body.email;
+            const firstName = req.body.firstName.trim();
+            const lastName = req.body.lastName?.trim();
+            const password = bcrypt.hashSync(req.body.password);
 
             const session = driver.session();
             const preQuery = `match(p:Person{email:$email})return p`;
@@ -55,11 +64,11 @@ function registrationService(userData) {
     })
 }
 
-function loginService(userData){
+function loginService(req,res){
 return new Promise((resolve, reject)=>{
     try {
-        const email = userData.email;
-        const password = userData.password;
+        const email = req.body.email;
+        const password =  req.body.password;
         const session = driver.session();
         const query = `match(p:Person{email:$email}) return properties(p) as prop`; 
         session.run(query,{email:email})
@@ -72,6 +81,9 @@ return new Promise((resolve, reject)=>{
           );
             if(isUserAuthenticated){
             const {password,...account} = result.records[0].get('prop');
+            const token = generateToken(account);
+            res.cookie('authToken', token, { httpOnly: true, secure: true, domain:'localhost',path:'/' });
+            // console.log(res);
             resolve({stat:true,data:account});
             }else{
                 reject({stat:false,message:'Invalid Credentials'});
@@ -83,7 +95,6 @@ return new Promise((resolve, reject)=>{
         .catch((error)=>{
             console.log('Error in login::',error);
             reject({stat:false,message:'Error in Authentication'});
-
         })
 
      } catch (error) {
@@ -93,3 +104,11 @@ return new Promise((resolve, reject)=>{
 })
 
 }
+
+function logoutService(req,res){
+    try {
+        res.clearCookie('authToken');
+    } catch (error) {
+        console.log(error);
+    }
+    }

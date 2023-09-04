@@ -2,7 +2,7 @@ var loanApplicationService = require('../services/loanApplicationService');
 
 exports.loanApplicationController = (req, res)=>{
     try {
-        loanApplicationService.submitLoanApplication(req.body)
+        loanApplicationService.submitLoanApplication(req,res)
         .then((data)=>{
             res.status(200).send(data);
            })

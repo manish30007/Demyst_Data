@@ -5,10 +5,12 @@ const driver = dbService();
 var service = {};
 service.submitLoanApplication=submitLoanApplication;
 module.exports = service;
-function submitLoanApplication(bussinessData) {
+function submitLoanApplication(req,res) {
     return new Promise(async(resolve, reject) => {
         try {
+            
             // storing business detail in database for future reference
+            var bussinessData = req.body;
             const applicationId = bussinessData.applicationId;
             const businessName = bussinessData.businessName;
             const yearOfEstb = bussinessData.yearOfEstb;
@@ -34,7 +36,7 @@ function submitLoanApplication(bussinessData) {
             if (avgAssetVal > loanAmount) {
                 preassessmentValue = 100;
             }
-            console.log('preassessmentValue::', preassessmentValue);
+            console.log('preassessmentValue::', preassessmentValue,wholeYearProfit,avgAssetVal);
 
             const session = driver.session();
             const query = 

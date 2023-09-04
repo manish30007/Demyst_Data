@@ -3,12 +3,15 @@ import { AccountingService } from '../accounting.service';
 import { AbstractControl, FormBuilder, FormControl, FormGroup, ValidationErrors, Validators } from '@angular/forms';
 import { LoanService } from '../loan.service';
 import Swal from "sweetalert2";
+import { UserService} from '../user.service';
+import { User } from 'src/utils/User';
 @Component({
   selector: 'app-dashboard',
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.scss']
 })
 export class DashboardComponent {
+  currentUser: User | null=null;
   balansheetData:[]=[];
 
   form: FormGroup = new FormGroup({
@@ -23,9 +26,13 @@ export class DashboardComponent {
   isSheetVerified:Boolean = false;
   loading:Boolean = false;
   
-  constructor(private accountingService:AccountingService, private formBuilder:FormBuilder, private loanService:LoanService) { }
+  constructor(private accountingService:AccountingService, private formBuilder:FormBuilder, private loanService:LoanService, private userService:UserService) { }
 
   ngOnInit(): void {
+    this.userService.currentUser.subscribe((user) => {
+      this.currentUser = user;})
+      console.log(this.currentUser);
+      
     this.form = this.formBuilder.group(
       {
         businessName: ['', [Validators.required]],
@@ -38,7 +45,7 @@ export class DashboardComponent {
   }
 
   requestBalanceSheet(){
-    this.accountingService.requestBalanceSheet('Xero').subscribe({
+    this.accountingService.requestBalanceSheet(this.form.controls['accountingProvider'].value).subscribe({
       next:(data)=>{
       if(data.stat==true){
       this.balansheetData = data.data;
@@ -58,19 +65,21 @@ export class DashboardComponent {
   onSubmit(){
       this.submitted = true;
 
-      if (this.form.invalid||this.isSheetVerified) {
+      if (this.form.invalid||!this.isSheetVerified) {
         return;
       }
 
       this.loading = true;
       var businessData=this.form.value;
       businessData.balanceSheetData=this.balansheetData;
+      businessData.applicationId = this.currentUser?.applicationId;
       this.loanService.submitLoanApplication(businessData).subscribe({
         next:(data)=>{
         if(data.stat==true){
           this.loanResult=data.data;
           Swal.fire('Result', this.loanResult, 'success');
           this.form.reset();
+          this.isSheetVerified = false;
           console.log(this.loanResult);      
         }else{
           // swal

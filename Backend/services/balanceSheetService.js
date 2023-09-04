@@ -7,9 +7,11 @@ service.fetchBalanceSheet = fetchBalanceSheet;
 
 module.exports = service;
 
-function fetchBalanceSheet(AccountingProvider,email){
+function fetchBalanceSheet(req,res){
     return new Promise((resolve,reject)=>{
         try {
+        var AccountingProvider=req.body.AccountingProvider
+        var email = req.body.email;
         var balanceSheet;
             //We can use a Map data structure, with the name of the provider as the key and the related URL as the associated value, to record different third-party accounting provider API URLs.
 
